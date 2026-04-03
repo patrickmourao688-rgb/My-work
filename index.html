@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia Treino Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1e3c72 0%,#2a5298 100%);color:#fff;min-height:100vh}
+        .container{max-width:1200px;margin:0 auto;padding:20px}
+        .header{text-align:center;padding:3rem 0;background:rgba(255,255,255,0.1);backdrop-filter:blur(20px);border-radius:25px;margin-bottom:2rem}
+        .header h1{font-size:3rem;margin-bottom:1rem;background:linear-gradient(45deg,#ff6b6b,#4ecdc4);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .filtros{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-bottom:2rem}
+        .filtro{background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);padding:1.5rem;border-radius:20px;border:1px solid rgba(255,255,255,0.2)}
+        .filtro label{font-weight:bold;margin-bottom:0.8rem;display:block}
+        select{padding:1rem;border:2px solid rgba(255,255,255,0.3);border-radius:12px;background:rgba(255,255,255,0.9);font-size:1.1rem;width:100%;color:#333}
+        .btn-gerar{background:linear-gradient(135deg,#ff6b6b,#ff8e8e);color:white;border:none;padding:1.5rem 3rem;border-radius:30px;font-size:1.4rem;font-weight:bold;cursor:pointer;display:block;margin:2rem auto;transition:all 0.3s;box-shadow:0 15px 35px rgba(255,107,107,0.4)}
+        .btn-gerar:hover{transform:translateY(-5px);box-shadow:0 25px 50px rgba(255,107,107,0.6)}
+        .treino-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:2rem}
+        .dia-card{background:rgba(255,255,255,0.1);backdrop-filter:blur(20px);border-radius:25px;padding:2.5rem;border:1px solid rgba(255,255,255,0.2);height:fit-content}
+        .dia-titulo{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:3px solid #ff6b6b}
+        .dia-titulo h2{font-size:2rem}
+        .exercicio{display:flex;justify-content:space-between;align-items:center;padding:1.5rem;background:rgba(255,255,255,0.1);border-radius:15px;margin-bottom:1rem;transition:all 0.3s;border-right:5px solid #4ecdc4}
+        .exercicio:hover{transform:translateX(10px);background:rgba(255,255,255,0.2)}
+        .ex-nome{font-size:1.3rem;font-weight:bold}
+        .ex-detalhes{font-size:1.1rem;opacity:0.9}
+        .ex-series{font-size:1.4rem;font-weight:bold;color:#ff6b6b}
+        .acoes{display:flex;gap:1rem;margin-top:2rem}
+        .btn-copiar{background:#28a745;color:white;border:none;padding:1rem 2rem;border-radius:25px;cursor:pointer;font-weight:bold;transition:all 0.3s}
+        .btn-pdf{background:#dc3545;color:white;border:none;padding:1rem 2rem;border-radius:25px;cursor:pointer;font-weight:bold;transition:all 0.3s;margin-left:1rem}
+        @media(max-width:768px){.treino-grid{grid-template-columns:1fr}.exercicio{flex-direction:column;align-items:flex-start;gap:0.5rem;text-align:left}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-dumbbell"></i> ACADEMIA TREINO PRO</h1>
+            <p>Treinos profissionais para academia - 100% máquinas e pesos livres</p>
+        </div>
+
+        <div class="filtros">
+            <div class="filtro">
+                <label>🏆 Nível</label>
+                <select id="nivel">
+                    <option value="iniciante">Iniciante (3x12-15)</option>
+                    <option value="intermediario">Intermediário (4x10-12)</option>
+                    <option value="avancado">Avançado (4x8-10)</option>
+                </select>
+            </div>
+            <div class="filtro">
+                <label>🎯 Objetivo</label>
+                <select id="objetivo">
+                    <option value="hipertrofia">Hipertrofia</option>
+                    <option value="forca">Força Máxima</option>
+                    <option value="definição">Definição</option>
+                </select>
+            </div>
+            <div class="filtro">
+                <label>📅 Dias/Semana</label>
+                <select id="dias">
+                    <option value="4">4 dias (ABCD)</option>
+                    <option value="5">5 dias (ABCDA)</option>
+                    <option value="6">6 dias (ABCABC)</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="btn-gerar" onclick="gerarTreinoAcademia()">
+            <i class="fas fa-magic"></i> GERAR TREINO ACADEMIA
+        </button>
+
+        <div id="treinos" class="treino-grid" style="display:none"></div>
+    </div>
+
+    <script>
+        const treinosAcademia = {
+            A: { // PEITO + TRICEPS
+                iniciante: ['Supino Reto Barra', 'Supino Inclinado Halteres', 'Crossover', 'Tríceps Pulley', 'Tríceps Testa', 'Supino Fechado'],
+                intermediario: ['Supino Reto Livre', 'Supino Inclinado Barra', 'Crucifixo Máquina', 'Tríceps Francês', 'Paralelas', 'Tríceps Corda'],
+                avancado: ['Supino Máquina Hammer', 'Supino Declinado', 'Crossover Drop', 'Tríceps Close Grip', 'Overhead Extensão', 'Kickback Halteres']
+            },
+            B: { // COSTAS + BICIEPS
+                iniciante: ['Puxada Frontal', 'Remada Curvada Barra', 'Remada Unilateral', 'Rosca Direta', 'Rosca Scott', 'Rosca 21s'],
+                intermediario: ['Barra Fixa', 'Remada T-Bar', 'Pulldown Invertido', 'Rosca Martelo', 'Rosca Inclinado', 'Rosca Concentrada'],
+                avancado: ['Remada Low Pulley', 'Puxada Supinada', 'Face Pull', 'Rosca Barra EZ', 'Rosca Spider', 'Rosca Drop Set']
+            },
+            C: { // PERNAS
+                iniciante: ['Leg Press 45°', 'Agachamento Smith', 'Extensora', 'Flexora', 'Panturrilha em Pé', 'Abdominal Crunch'],
+                intermediario: ['Agachamento Livre', 'Hack Squat', 'Leg Press Horizontal', 'Stiff', 'Panturrilha Sentado', 'Elevação Pélvica'],
+                avancado: ['Agachamento Frontal', 'Leg Press Unilateral', 'Agachamento Hack', 'Deadlift Romeno', 'Panturrilha Smith', 'Abdominais Suspenso']
+            },
+            D: { // OMBROS + ABDOMEN
+                iniciante: ['Desenvolvimento Máquina', 'Elevação Lateral', 'Elevação Frontal', 'Abdominal Infra', 'Prancha', 'Russian Twist'],
+                intermediario: ['Desenvolvimento Militar', 'Elevação Lateral Halteres', 'Remada Alta', 'Abdominal Roda', 'Elevação de Pernas', 'Prancha Lateral'],
+                avancado: ['Desenvolvimento Livre', 'Elevação Lateral Drop', 'Arnold Press', 'Abdominais Cable', 'Dragon Flag', 'Hanging Leg Raise']
+            }
+        };
+
+        const series = {
+            iniciante: '3x12-15',
+            intermediario: '4x10-12', 
+            avancado: '4x8-10'
+        };
+
+        function gerarTreinoAcademia() {
+            const nivel = document.getElementById('nivel').value;
+            const dias = parseInt(document.getElementById('dias').value);
+            
+            const treinosDiv = document.getElementById('treinos');
+            treinosDiv.innerHTML = '';
+            treinosDiv.style.display = 'grid';
+
+            const seqDias = dias === 4 ? ['A','B','C','D'] : 
+                           dias === 5 ? ['A','B','C','D','A'] : 
+                           ['A','B','C','A','B','C'];
+
+            seqDias.forEach((dia, index) => {
+                const card = document.createElement('div');
+                card.className = 'dia-card';
+                card.innerHTML = `
+                    <div class="dia-titulo">
+                        <h2>📅 Dia ${index+1} - ${dia}</h2>
+                        <div class="acoes">
+                            <button class="btn-copiar" onclick="copiarTreino(${index})">📋 Copiar</button>
+                            <button class="btn-pdf" onclick="imprimirDia(${index})">📄 PDF</button>
+                        </div>
+                    </div>
+                `;
+
+                treinosAcademia[dia][nivel].forEach((exerc, idx) => {
+                    const exercicio = document.createElement('div');
+                    exercicio.className = 'exercicio';
+                    exercicio.innerHTML = `
+                        <div>
+                            <div class="ex-nome">${idx+1}. ${exerc}</div>
+                            <div class="ex-detalhes">Descanso: 90-120s | Foco: ${nivel}</div>
+                        </div>
+                        <div class="ex-series">${series[nivel]}</div>
+                    `;
+                    card.appendChild(exercicio);
+                });
+
+                treinosDiv.appendChild(card);
+            });
+        }
+
+        function copiarTreino(index) {
+            const card = document.querySelectorAll('.dia-card')[index];
+            const texto = Array.from(card.querySelectorAll('.exercicio')).map(el => 
+                el.querySelector('.ex-nome').textContent + ' - ' + el.querySelector('.ex-series').textContent
+            ).join('\n');
+            navigator.clipboard.writeText(`TREINO DIA ${index+1}\n\n${texto}`);
+            alert('✅ Treino copiado!');
+        }
+
+        function imprimirDia(index) {
+            const card = document.querySelectorAll('.dia-card')[index];
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html><head><title>Treino Dia ${index+1}</title>
+                <style>body{font-family:Arial;padding:20px;background:white;color:black} .exercicio{padding:15px;margin:10px 0;border-left:5px solid #4ecdc4}</style></head>
+                <body><h1>Treino Academia - Dia ${index+1}</h1>${card.innerHTML}</body></html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+    </script>
+</body>
+</html>
